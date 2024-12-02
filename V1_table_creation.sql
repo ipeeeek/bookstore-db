@@ -382,8 +382,8 @@ CREATE TABLE cart_book (
 	book_id INT NOT NULL,
 	created_at DATETIME NOT NULL DEFAULT GETDATE(),
 	updated_at DATETIME NOT NULL DEFAULT GETDATE()
-
-	 CONSTRAINT PK_cart_book 
+	
+	CONSTRAINT PK_cart_book 
 		PRIMARY KEY (cart_id, book_id),
 
 	CONSTRAINT FK_cart_book_cart
