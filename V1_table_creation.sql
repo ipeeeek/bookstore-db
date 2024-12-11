@@ -223,6 +223,7 @@ CREATE TABLE order_status (
 CREATE TABLE customer_order (
 	customer_order_id INT PRIMARY KEY IDENTITY (1,1) NOT NULL,
 	customer_id INT NOT NULL,
+	shipping_address_id INT NOT NULL,
 	order_status_id INT NOT NULL,
 	total_amount DECIMAL(18,2) NOT NULL,
 	created_at DATETIME NOT NULL DEFAULT GETDATE(),
@@ -234,7 +235,11 @@ CREATE TABLE customer_order (
 
 	CONSTRAINT FK_customer_order_order_status
 		FOREIGN KEY (order_status_id)
-		REFERENCES order_status(order_status_id)
+		REFERENCES order_status(order_status_id),
+
+	CONSTRAINT FK_customer_order_shipping_address
+		FOREIGN KEY (shipping_address_id)
+		REFERENCES shipping_address(shipping_address_id)
 );
 
 CREATE TABLE dimension (
