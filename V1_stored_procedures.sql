@@ -193,6 +193,7 @@ BEGIN
 END;
 GO
 
+--REMOVE BOOK FROM CART
 CREATE PROCEDURE usp_remove_book_from_cart
 	@cart_id INT,
 	@book_id INT
@@ -214,4 +215,212 @@ BEGIN
 			SET quantity = quantity - 1
 			WHERE cart_id = @cart_id AND book_id = @book_id
 		END
-		ELSE 
+		ELSE
+		BEGIN
+			DELETE FROM cart_book
+			WHERE cart_id = @cart_id AND book_id = @book_id
+		END
+
+		COMMIT TRANSACTION;
+	END TRY
+	BEGIN CATCH
+		ROLLBACK TRANSACTION;
+		THROW;
+	END CATCH
+END;
+GO
+
+--REMOVE BOOK FROM FAVORITES
+CREATE PROCEDURE usp_remove_book_from_favorite
+	@favorite_id INT,
+	@book_id INT
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	BEGIN TRANSACTION;
+
+	--Check if the book already exists in favorites.
+	BEGIN TRY
+		DELETE FROM favorite_book
+		WHERE favorite_id = @favorite_id AND book_id = @book_id
+
+		COMMIT TRANSACTION;
+	END TRY
+
+	BEGIN CATCH
+		ROLLBACK TRANSACTION;
+		THROW;
+	END CATCH;
+
+END;
+GO
+
+--UPDATE CUSTOMER PASSWORD
+CREATE PROCEDURE usp_update_customer_password
+	@customer_id INT,
+	@new_password VARBINARY(64)
+
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	BEGIN TRANSACTION;
+	
+	BEGIN TRY
+		UPDATE customer
+			SET password_hash = @new_password
+			WHERE customer_id = @customer_id
+		COMMIT TRANSACTION;
+	END TRY
+	BEGIN CATCH
+		ROLLBACK TRANSACTION;
+		THROW;
+	END CATCH;
+END;
+GO
+
+--UPDATE ADMIN PASSWORD
+CREATE PROCEDURE usp_update_admin_password
+	@admin_user_id INT,
+	@new_password VARBINARY(64)
+
+AS
+BEGIN
+	SET NOCOUNT ON;
+
+	BEGIN TRANSACTION;
+	
+	BEGIN TRY
+		UPDATE admin_user
+			SET password_hash = @new_password
+			WHERE admin_user_id = @admin_user_id
+		COMMIT TRANSACTION;
+	END TRY
+	BEGIN CATCH
+		ROLLBACK TRANSACTION;
+		THROW;
+	END CATCH;
+END;
+GO
+
+-- ADD BOOK TO STORE INVENTORY
+CREATE PROCEDURE usp_add_book
+    @title NVARCHAR(255),
+    @isbn NVARCHAR(13),
+    @publication_date DATE,
+    @cover_image_path NVARCHAR(255),
+    @synopsis NVARCHAR(MAX),
+    @price DECIMAL(18,2),
+    @stock_quantity INT,
+    @page_count INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    BEGIN TRANSACTION;
+
+    BEGIN TRY
+        -- Check if the book already exists using ISBN
+        IF NOT EXISTS (
+            SELECT 1
+            FROM book
+            WHERE isbn = @isbn
+        )
+        BEGIN
+            INSERT INTO book (
+                title,
+                isbn,
+                publication_date,
+                cover_image_path,
+                synopsis,
+                price,
+                stock_quantity,
+                page_count
+            )
+            VALUES (
+                @title,
+                @isbn,
+                @publication_date,
+                @cover_image_path,
+                @synopsis,
+                @price,
+                @stock_quantity,
+                @page_count
+            );
+        END
+        COMMIT TRANSACTION;
+    END TRY
+
+    BEGIN CATCH
+        ROLLBACK TRANSACTION;
+        THROW;
+    END CATCH
+
+END;
+GO
+
+--REMOVE BOOK FROM STORE INVENTORY
+CREATE PROCEDURE usp_remove_book
+	@book_id INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    BEGIN TRANSACTION;
+
+    BEGIN TRY
+        BEGIN
+           DELETE FROM book
+		   WHERE book_id = @book_id
+        END
+        COMMIT TRANSACTION;
+    END TRY
+
+    BEGIN CATCH
+        ROLLBACK TRANSACTION;
+        THROW;
+    END CATCH
+
+END;
+GO
+
+--UPDATE BOOK DETAILS
+CREATE PROCEDURE usp_update_book
+    @book_id INT,
+    @title NVARCHAR(255),
+    @isbn NVARCHAR(13),
+    @publication_date DATE,
+    @cover_image_path NVARCHAR(255),
+    @synopsis NVARCHAR(MAX),
+    @price DECIMAL(18,2),
+    @stock_quantity INT,
+    @page_count INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    BEGIN TRANSACTION;
+
+    BEGIN TRY
+        UPDATE book
+        SET
+            title = @title,
+            isbn = @isbn,
+            publication_date = @publication_date,
+            cover_image_path = @cover_image_path,
+            synopsis = @synopsis,
+            price = @price,
+            stock_quantity = @stock_quantity,
+            page_count = @page_count
+        WHERE book_id = @book_id;
+
+        COMMIT TRANSACTION;
+    END TRY
+
+    BEGIN CATCH
+        ROLLBACK TRANSACTION;
+        THROW;
+    END CATCH
+END;
+GO
