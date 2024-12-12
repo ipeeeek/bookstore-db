@@ -390,6 +390,7 @@ CREATE TABLE book_genre (
 CREATE TABLE cart_book (
 	cart_id  INT NOT NULL,
 	book_id INT NOT NULL,
+	quantity INT NOT NULL DEFAULT 1,
 	created_at DATETIME NOT NULL DEFAULT GETDATE(),
 	updated_at DATETIME NOT NULL DEFAULT GETDATE()
 	
