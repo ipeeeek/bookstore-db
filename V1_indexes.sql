@@ -22,4 +22,5 @@ CREATE INDEX IX_genre_genre_name ON genre(genre_name);
 CREATE INDEX IX_customer_order_customer_id ON customer_order(customer_id);
 CREATE INDEX IX_book_title ON book(title);
 CREATE INDEX IX_book_isbn ON book(isbn);
+CREATE INDEX IX_book_price ON book(price);
 CREATE INDEX IX_book_publisher_id ON book(publisher_id);
