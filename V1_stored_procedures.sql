@@ -108,6 +108,33 @@ BEGIN
 END;
 GO
 
+--UPDATE CUSTOMER INFORMATION
+CREATE PROCEDURE usp_update_customer
+    @customer_id INT,
+    @new_phone_number VARCHAR(15),
+    @new_email NVARCHAR(255)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    BEGIN TRANSACTION;
+
+    BEGIN TRY
+        UPDATE customer
+        SET
+            phone_number = @new_phone_number,
+            email = @new_email
+        WHERE customer_id = @customer_id;
+        COMMIT TRANSACTION;
+    END TRY
+
+    BEGIN CATCH
+        ROLLBACK TRANSACTION;
+        THROW;
+    END CATCH;
+END;
+GO
+
 -- ADD BOOK TO CART
 CREATE PROCEDURE usp_add_book_to_cart
 	@cart_id INT,
@@ -424,3 +451,4 @@ BEGIN
     END CATCH
 END;
 GO
+
