@@ -287,6 +287,7 @@ CREATE TABLE book (
 	price DECIMAL(18,2) NOT NULL,
 	stock_quantity INT NOT NULL,
 	page_count INT NOT NULL,
+	average_rating DECIMAL(1,1) NULL,
 	dimension_id INT NOT NULL,
 	book_format_id INT NOT NULL,
 	book_language_id INT NOT NULL,
@@ -427,6 +428,7 @@ CREATE TABLE favorite_book(
 CREATE TABLE customer_order_book (
 	customer_order_id  INT NOT NULL,
 	book_id INT NOT NULL,
+	quantity INT NOT NULL DEFAULT 1,
 	created_at DATETIME NOT NULL DEFAULT GETDATE(),
 	updated_at DATETIME NOT NULL DEFAULT GETDATE()
 
@@ -442,21 +444,31 @@ CREATE TABLE customer_order_book (
 		REFERENCES book(book_id)
 );
 
-CREATE TABLE in_stock_notification (
+CREATE TABLE in_stock_notification_subscription (
+	in_stock_notification_subscription_id INT PRIMARY KEY IDENTITY(1,1) NOT NULL,
 	customer_id INT NOT NULL,
 	book_id INT NOT NULL,
-	notification_sent BIT DEFAULT 0,
+	notification_enabled BIT DEFAULT 1,
 	created_at DATETIME NOT NULL DEFAULT GETDATE(),
 	updated_at DATETIME NOT NULL DEFAULT GETDATE(),
 
-	CONSTRAINT PK_customer_book
-		PRIMARY KEY (customer_id, book_id),
-
-	CONSTRAINT FK_in_stock_notification_customer
+	CONSTRAINT FK_in_stock_notification_subscription_customer
 		FOREIGN KEY (customer_id)
 		REFERENCES customer(customer_id),
 
-	CONSTRAINT FK_in_stock_notification_book
+	CONSTRAINT FK_in_stock_notification_subscription_book
 		FOREIGN KEY (book_id)
 		REFERENCES book(book_id)
+);
+
+CREATE TABLE in_stock_notification_queue (
+	in_stock_notification_queue_id INT PRIMARY KEY IDENTITY(1,1) NOT NULL,
+	in_stock_notification_subscription_id INT NOT NULL,
+	notification_status NVARCHAR(20) NOT NULL DEFAULT 'Pending',
+	created_at DATETIME NOT NULL DEFAULT GETDATE(),
+	updated_at DATETIME NOT NULL DEFAULT GETDATE()
+
+	CONSTRAINT FK_in_stock_notification_queue_in_stock_notification_subscription
+		FOREIGN KEY (in_stock_notification_subscription_id)
+		REFERENCES in_stock_notification_subscription(in_stock_notification_subscription_id)
 );
