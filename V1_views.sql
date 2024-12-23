@@ -9,7 +9,7 @@ SELECT
 	b.stock_quantity
 FROM book b
 WHERE b.stock_quantity = 0;
-GO;
+GO
 
 CREATE VIEW vw_sold_books
 AS
