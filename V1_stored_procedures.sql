@@ -34,6 +34,7 @@ GO
 
 -- ADD SHIPPING ADDRESS
 CREATE PROCEDURE usp_add_shipping_address
+    @customer_id INT,
     @street_id INT,
     @neighborhood_id INT,
     @district_id INT,
@@ -46,6 +47,7 @@ BEGIN
     SET NOCOUNT ON;
 
     INSERT INTO shipping_address (
+        customer_id,
         street_id,
         neighborhood_id,
         district_id,
@@ -54,6 +56,7 @@ BEGIN
         postal_code_id
     )
     VALUES (
+        @customer_id,
         @street_id,
         @neighborhood_id,
         @district_id,
@@ -74,7 +77,7 @@ CREATE PROCEDURE usp_register_customer
     @email NVARCHAR(255),
     @password_hash VARBINARY(64),
     @new_customer_id INT OUTPUT,
-	@new_cart_id INT OUTPUT
+    @new_cart_id INT OUTPUT
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -96,19 +99,19 @@ BEGIN
 
     SET @new_customer_id = SCOPE_IDENTITY();
 
-	--Creates a cart for the registered customer.
-	INSERT INTO cart (
-		customer_id
-	)
-	VALUES (
-		@new_customer_id
-	)
+    -- Creates a cart for the registered customer.
+    INSERT INTO cart (
+        customer_id
+    )
+    VALUES (
+        @new_customer_id
+    )
 
-	SET @new_cart_id = SCOPE_IDENTITY();
+    SET @new_cart_id = SCOPE_IDENTITY();
 END;
 GO
 
---UPDATE CUSTOMER INFORMATION
+-- UPDATE CUSTOMER INFORMATION
 CREATE PROCEDURE usp_update_customer
     @customer_id INT,
     @new_phone_number VARCHAR(15),
@@ -137,197 +140,194 @@ GO
 
 -- ADD BOOK TO CART
 CREATE PROCEDURE usp_add_book_to_cart
-	@cart_id INT,
-	@book_id INT
+    @cart_id INT,
+    @book_id INT
 AS
 BEGIN
-	SET NOCOUNT ON;
+    SET NOCOUNT ON;
 
-	BEGIN TRANSACTION;
+    BEGIN TRANSACTION;
 
-	--Check if the book already exists in the cart.
-	BEGIN TRY
-		IF EXISTS (
-			SELECT 1
-			FROM cart_book
-			WHERE cart_id = @cart_id AND book_id = @book_id
-		)
-		BEGIN
-			UPDATE cart_book
-			SET quantity = quantity + 1
-			WHERE cart_id = @cart_id AND book_id = @book_id
-		END
+    -- Check if the book already exists in the cart.
+    BEGIN TRY
+        IF EXISTS (
+            SELECT 1
+            FROM cart_book
+            WHERE cart_id = @cart_id AND book_id = @book_id
+        )
+        BEGIN
+            UPDATE cart_book
+            SET quantity = quantity + 1
+            WHERE cart_id = @cart_id AND book_id = @book_id
+        END
 
-		ELSE
-		BEGIN
-			INSERT INTO cart_book (
-				cart_id,
-				book_id
-			)
-			VALUES (
-				@cart_id,
-				@book_id
-			);
-		END
+        ELSE
+        BEGIN
+            INSERT INTO cart_book (
+                cart_id,
+                book_id
+            )
+            VALUES (
+                @cart_id,
+                @book_id
+            );
+        END
 
-		COMMIT TRANSACTION;
-	END TRY
+        COMMIT TRANSACTION;
+    END TRY
 
-	BEGIN CATCH
-		ROLLBACK TRANSACTION;
-		THROW;
-	END CATCH;
+    BEGIN CATCH
+        ROLLBACK TRANSACTION;
+        THROW;
+    END CATCH;
 
 END;
 GO
 
---ADD BOOK TO FAVORITE
+-- ADD BOOK TO FAVORITE
 CREATE PROCEDURE usp_add_book_to_favorite
-	@favorite_id INT,
-	@book_id INT
+    @favorite_id INT,
+    @book_id INT
 AS
 BEGIN
-	SET NOCOUNT ON;
+    SET NOCOUNT ON;
 
-	BEGIN TRANSACTION;
+    BEGIN TRANSACTION;
 
-	--Check if the book already exists in favorites.
-	BEGIN TRY
-		IF NOT EXISTS (
-			SELECT 1
-			FROM favorite_book
-			WHERE favorite_id = @favorite_id AND book_id = @book_id
-		)
-		BEGIN
-			INSERT INTO favorite_book (
-				favorite_id,
-				book_id
-			)
-			VALUES (
-				@favorite_id,
-				@book_id
-			);
-		END
+    -- Check if the book already exists in favorites.
+    BEGIN TRY
+        IF NOT EXISTS (
+            SELECT 1
+            FROM favorite_book
+            WHERE favorite_id = @favorite_id AND book_id = @book_id
+        )
+        BEGIN
+            INSERT INTO favorite_book (
+                favorite_id,
+                book_id
+            )
+            VALUES (
+                @favorite_id,
+                @book_id
+            );
+        END
 
-		COMMIT TRANSACTION;
-	END TRY
+        COMMIT TRANSACTION;
+    END TRY
 
-	BEGIN CATCH
-		ROLLBACK TRANSACTION;
-		THROW;
-	END CATCH;
+    BEGIN CATCH
+        ROLLBACK TRANSACTION;
+        THROW;
+    END CATCH;
 
 END;
 GO
 
---REMOVE BOOK FROM CART
+-- REMOVE BOOK FROM CART
 CREATE PROCEDURE usp_remove_book_from_cart
-	@cart_id INT,
-	@book_id INT
-
+    @cart_id INT,
+    @book_id INT
 AS
 BEGIN
-	SET NOCOUNT ON;
+    SET NOCOUNT ON;
 
-	BEGIN TRANSACTION;
+    BEGIN TRANSACTION;
 
-	BEGIN TRY
-		IF EXISTS (
-			SELECT 1
-			FROM cart_book
-			WHERE cart_id = @cart_id AND book_id = @book_id AND quantity > 1
-		)
-		BEGIN
-			UPDATE cart_book
-			SET quantity = quantity - 1
-			WHERE cart_id = @cart_id AND book_id = @book_id
-		END
-		ELSE
-		BEGIN
-			DELETE FROM cart_book
-			WHERE cart_id = @cart_id AND book_id = @book_id
-		END
+    BEGIN TRY
+        IF EXISTS (
+            SELECT 1
+            FROM cart_book
+            WHERE cart_id = @cart_id AND book_id = @book_id AND quantity > 1
+        )
+        BEGIN
+            UPDATE cart_book
+            SET quantity = quantity - 1
+            WHERE cart_id = @cart_id AND book_id = @book_id
+        END
+        ELSE
+        BEGIN
+            DELETE FROM cart_book
+            WHERE cart_id = @cart_id AND book_id = @book_id
+        END
 
-		COMMIT TRANSACTION;
-	END TRY
-	BEGIN CATCH
-		ROLLBACK TRANSACTION;
-		THROW;
-	END CATCH
+        COMMIT TRANSACTION;
+    END TRY
+    BEGIN CATCH
+        ROLLBACK TRANSACTION;
+        THROW;
+    END CATCH
 END;
 GO
 
---REMOVE BOOK FROM FAVORITES
+-- REMOVE BOOK FROM FAVORITES
 CREATE PROCEDURE usp_remove_book_from_favorite
-	@favorite_id INT,
-	@book_id INT
+    @favorite_id INT,
+    @book_id INT
 AS
 BEGIN
-	SET NOCOUNT ON;
+    SET NOCOUNT ON;
 
-	BEGIN TRANSACTION;
+    BEGIN TRANSACTION;
 
-	--Check if the book already exists in favorites.
-	BEGIN TRY
-		DELETE FROM favorite_book
-		WHERE favorite_id = @favorite_id AND book_id = @book_id
+    -- Check if the book already exists in favorites.
+    BEGIN TRY
+        DELETE FROM favorite_book
+        WHERE favorite_id = @favorite_id AND book_id = @book_id
 
-		COMMIT TRANSACTION;
-	END TRY
+        COMMIT TRANSACTION;
+    END TRY
 
-	BEGIN CATCH
-		ROLLBACK TRANSACTION;
-		THROW;
-	END CATCH;
+    BEGIN CATCH
+        ROLLBACK TRANSACTION;
+        THROW;
+    END CATCH;
 
 END;
 GO
 
---UPDATE CUSTOMER PASSWORD
+-- UPDATE CUSTOMER PASSWORD
 CREATE PROCEDURE usp_update_customer_password
-	@customer_id INT,
-	@new_password VARBINARY(64)
-
+    @customer_id INT,
+    @new_password VARBINARY(64)
 AS
 BEGIN
-	SET NOCOUNT ON;
+    SET NOCOUNT ON;
 
-	BEGIN TRANSACTION;
-	
-	BEGIN TRY
-		UPDATE customer
-			SET password_hash = @new_password
-			WHERE customer_id = @customer_id
-		COMMIT TRANSACTION;
-	END TRY
-	BEGIN CATCH
-		ROLLBACK TRANSACTION;
-		THROW;
-	END CATCH;
+    BEGIN TRANSACTION;
+    
+    BEGIN TRY
+        UPDATE customer
+        SET password_hash = @new_password
+        WHERE customer_id = @customer_id
+        COMMIT TRANSACTION;
+    END TRY
+    BEGIN CATCH
+        ROLLBACK TRANSACTION;
+        THROW;
+    END CATCH;
 END;
 GO
 
---UPDATE ADMIN PASSWORD
+-- UPDATE ADMIN PASSWORD
 CREATE PROCEDURE usp_update_admin_password
-	@admin_user_id INT,
-	@new_password VARBINARY(64)
-
+    @admin_user_id INT,
+    @new_password VARBINARY(64)
 AS
 BEGIN
-	SET NOCOUNT ON;
+    SET NOCOUNT ON;
 
-	BEGIN TRANSACTION;
-	
-	BEGIN TRY
-		UPDATE admin_user
-			SET password_hash = @new_password
-			WHERE admin_user_id = @admin_user_id
-		COMMIT TRANSACTION;
-	END TRY
-	BEGIN CATCH
-		ROLLBACK TRANSACTION;
-		THROW;
-	END CATCH;
+    BEGIN TRANSACTION;
+    
+    BEGIN TRY
+        UPDATE admin_user
+        SET password_hash = @new_password
+        WHERE admin_user_id = @admin_user_id
+        COMMIT TRANSACTION;
+    END TRY
+    BEGIN CATCH
+        ROLLBACK TRANSACTION;
+        THROW;
+    END CATCH;
 END;
 GO
 
@@ -387,9 +387,9 @@ BEGIN
 END;
 GO
 
---REMOVE BOOK FROM STORE INVENTORY
+-- REMOVE BOOK FROM STORE INVENTORY
 CREATE PROCEDURE usp_remove_book
-	@book_id INT
+    @book_id INT
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -397,10 +397,8 @@ BEGIN
     BEGIN TRANSACTION;
 
     BEGIN TRY
-        BEGIN
-           DELETE FROM book
-		   WHERE book_id = @book_id
-        END
+        DELETE FROM book
+        WHERE book_id = @book_id
         COMMIT TRANSACTION;
     END TRY
 
@@ -412,7 +410,7 @@ BEGIN
 END;
 GO
 
---UPDATE BOOK DETAILS
+-- UPDATE BOOK DETAILS
 CREATE PROCEDURE usp_update_book
     @book_id INT,
     @title NVARCHAR(255),
@@ -451,4 +449,3 @@ BEGIN
     END CATCH
 END;
 GO
-
