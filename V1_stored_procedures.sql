@@ -5,7 +5,6 @@ GO
 CREATE PROCEDURE usp_process_order
     @customer_id INT,
     @shipping_address_id INT,
-    @order_status_id INT,
     @payment_id INT,
     @total_amount DECIMAL(18,2),
     @order_id INT OUTPUT
@@ -16,14 +15,12 @@ BEGIN
     INSERT INTO customer_order (
         customer_id,
         shipping_address_id,
-        order_status_id,
         payment_id,
         total_amount
     )
     VALUES (
         @customer_id,
         @shipping_address_id,
-        @order_status_id,
         @payment_id,
         @total_amount
     );
@@ -31,6 +28,7 @@ BEGIN
     SET @order_id = SCOPE_IDENTITY();
 END;
 GO
+
 
 -- ADD SHIPPING ADDRESS
 CREATE PROCEDURE usp_add_shipping_address
