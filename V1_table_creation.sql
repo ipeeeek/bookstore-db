@@ -224,7 +224,7 @@ CREATE TABLE customer_order (
 	customer_order_id INT PRIMARY KEY IDENTITY (1,1) NOT NULL,
 	customer_id INT NOT NULL,
 	shipping_address_id INT NOT NULL,
-	order_status_id INT NOT NULL,
+	order_status_id INT NOT NULL DEFAULT 1,
 	payment_id INT NOT NULL,
 	total_amount DECIMAL(18,2) NOT NULL,
 	created_at DATETIME NOT NULL DEFAULT GETDATE(),
