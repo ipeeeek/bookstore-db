@@ -12,37 +12,55 @@ AS
 BEGIN
     SET NOCOUNT ON;
 
-    INSERT INTO customer_order (
-        customer_id,
-        shipping_address_id,
-        payment_id,
-        total_amount
-    )
-    VALUES (
-        @customer_id,
-        @shipping_address_id,
-        @payment_id,
-        @total_amount
-    );
+    BEGIN TRANSACTION;
 
-    SET @order_id = SCOPE_IDENTITY();
+    BEGIN TRY
+        INSERT INTO customer_order (
+            customer_id,
+            shipping_address_id,
+            payment_id,
+            total_amount
+        )
+        VALUES (
+            @customer_id,
+            @shipping_address_id,
+            @payment_id,
+            @total_amount
+        );
 
-	INSERT INTO customer_order_book (
-		customer_order_id,
-		book_id,
-		quantity
-	)
-	SELECT 
-		@order_id,
-		cb.book_id,
-		cb.quantity
-	FROM
-		cart c
-	INNER JOIN cart_book cb ON c.cart_id = cb.cart_id
-	WHERE
-		c.customer_id = @customer_id;
-	DELETE FROM cart WHERE customer_id = @customer_id;
-	COMMIT;
+        SET @order_id = SCOPE_IDENTITY();
+
+        INSERT INTO customer_order_book (
+            customer_order_id,
+            book_id,
+            quantity
+        )
+        SELECT
+            @order_id,
+            cb.book_id,
+            cb.quantity
+        FROM
+            cart c
+        INNER JOIN cart_book cb ON c.cart_id = cb.cart_id
+        WHERE
+            c.customer_id = @customer_id;
+
+        DELETE cb
+        FROM cart_book cb
+        INNER JOIN cart c ON cb.cart_id = c.cart_id
+        WHERE c.customer_id = @customer_id;
+
+        DELETE FROM cart
+        WHERE customer_id = @customer_id;
+
+        COMMIT TRANSACTION;
+    END TRY
+    BEGIN CATCH
+        IF @@TRANCOUNT > 0
+            ROLLBACK TRANSACTION;
+
+        THROW;
+    END CATCH
 END;
 GO
 
