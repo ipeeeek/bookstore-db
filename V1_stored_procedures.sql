@@ -38,7 +38,7 @@ BEGIN
 		cb.quantity
 	FROM
 		cart c
-	INNER JOIN cart_book cb ON c.cart_id = cb.book_id
+	INNER JOIN cart_book cb ON c.cart_id = cb.cart_id
 	WHERE
 		c.customer_id = @customer_id;
 	DELETE FROM cart WHERE customer_id = @customer_id;
