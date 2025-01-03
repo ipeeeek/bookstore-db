@@ -50,11 +50,9 @@ BEGIN
         INNER JOIN cart c ON cb.cart_id = c.cart_id
         WHERE c.customer_id = @customer_id;
 
-        DELETE FROM cart
-        WHERE customer_id = @customer_id;
-
         COMMIT TRANSACTION;
     END TRY
+
     BEGIN CATCH
         IF @@TRANCOUNT > 0
             ROLLBACK TRANSACTION;
@@ -63,6 +61,7 @@ BEGIN
     END CATCH
 END;
 GO
+
 
 
 -- ADD SHIPPING ADDRESS
