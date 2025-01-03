@@ -147,7 +147,7 @@ CREATE TABLE payment (
 	payment_id INT PRIMARY KEY IDENTITY (1,1) NOT NULL,
 	customer_id INT NOT NULL,
 	payment_method_id INT NOT NULL,
-	payment_status_id INT NOT NULL, 
+	payment_status_id INT NOT NULL DEFAULT 1, 
 	total_amount DECIMAL(18,2) NOT NULL,
 	created_at DATETIME NOT NULL DEFAULT GETDATE(),
 	updated_at DATETIME NOT NULL DEFAULT GETDATE(),
