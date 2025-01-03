@@ -26,6 +26,23 @@ BEGIN
     );
 
     SET @order_id = SCOPE_IDENTITY();
+
+	INSERT INTO customer_order_book (
+		customer_order_id,
+		book_id,
+		quantity
+	)
+	SELECT 
+		@order_id,
+		cb.book_id,
+		cb.quantity
+	FROM
+		cart c
+	INNER JOIN cart_book cb ON c.cart_id = cb.book_id
+	WHERE
+		c.customer_id = @customer_id;
+	DELETE FROM cart WHERE customer_id = @customer_id;
+	COMMIT;
 END;
 GO
 
