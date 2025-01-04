@@ -287,7 +287,7 @@ CREATE TABLE book (
 	price DECIMAL(18,2) NOT NULL,
 	stock_quantity INT NOT NULL,
 	page_count INT NOT NULL,
-	average_rating DECIMAL(1,1) NULL,
+	average_rating DECIMAL(3,1) NULL,
 	dimension_id INT NOT NULL,
 	book_format_id INT NOT NULL,
 	book_language_id INT NOT NULL,
@@ -316,7 +316,7 @@ CREATE TABLE rating (
 	rating_id INT PRIMARY KEY IDENTITY (1,1) NOT NULL,
 	customer_id INT NOT NULL,
 	book_id INT NOT NULL,
-	rating_value INT NOT NULL CHECK (rating_value BETWEEN 1 AND 5),
+	rating_value DECIMAL(3,1) NOT NULL CHECK (rating_value BETWEEN 1 AND 5),
 	created_at DATETIME NOT NULL DEFAULT GETDATE(),
 	updated_at DATETIME NOT NULL DEFAULT GETDATE(),
 

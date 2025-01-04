@@ -7,7 +7,7 @@ AFTER INSERT
 AS
 BEGIN
 	DECLARE @book_id INT;
-	DECLARE @new_average_rating DECIMAL(1,1);
+	DECLARE @new_average_rating DECIMAL(3,1);
 
 	SELECT @book_id = book_id FROM inserted;
 	SET @new_average_rating = dbo.fn_calculate_average_rating(@book_id)
