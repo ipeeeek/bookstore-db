@@ -7,7 +7,7 @@ AFTER INSERT
 AS  
 BEGIN  
     DECLARE @book_id INT;  
-    DECLARE @new_average_rating DECIMAL(3,1);  
+    DECLARE @new_average_rating DECIMAL(5,2);  
   
     SELECT @book_id = book_id FROM inserted;  
 

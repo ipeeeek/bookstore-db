@@ -287,7 +287,7 @@ CREATE TABLE book (
 	price DECIMAL(18,2) NOT NULL,
 	stock_quantity INT NOT NULL,
 	page_count INT NOT NULL,
-	average_rating DECIMAL(3,1) NULL,
+	average_rating DECIMAL(5,2) NULL,
 	dimension_id INT NOT NULL,
 	book_format_id INT NOT NULL,
 	book_language_id INT NOT NULL,

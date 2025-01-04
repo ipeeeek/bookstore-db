@@ -34,7 +34,7 @@ GO
 CREATE FUNCTION fn_calculate_average_rating (
 	@book_id INT
 )
-RETURNS DECIMAL(1,1)
+RETURNS DECIMAL(5,2)
 AS
 BEGIN
 	DECLARE @book_rating DECIMAL(3,1)
