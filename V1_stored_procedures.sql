@@ -373,7 +373,11 @@ CREATE PROCEDURE usp_add_book
     @price DECIMAL(18,2),
     @stock_quantity INT,
     @page_count INT,
-    @new_book_id INT OUTPUT
+    @average_rating DECIMAL(3,2),
+    @dimension_id INT,
+    @book_format_id INT,
+    @book_language_id INT,
+    @publisher_id INT
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -381,6 +385,7 @@ BEGIN
     BEGIN TRANSACTION;
 
     BEGIN TRY
+        -- Check if the book already exists using ISBN
         IF NOT EXISTS (
             SELECT 1
             FROM book
@@ -395,7 +400,12 @@ BEGIN
                 synopsis,
                 price,
                 stock_quantity,
-                page_count
+                page_count,
+                average_rating,
+                dimension_id,
+                book_format_id,
+                book_language_id,
+                publisher_id
             )
             VALUES (
                 @title,
@@ -405,12 +415,14 @@ BEGIN
                 @synopsis,
                 @price,
                 @stock_quantity,
-                @page_count
+                @page_count,
+                @average_rating,
+                @dimension_id,
+                @book_format_id,
+                @book_language_id,
+                @publisher_id
             );
-
-            SET @new_book_id = SCOPE_IDENTITY();
         END
-
         COMMIT TRANSACTION;
     END TRY
 
@@ -418,9 +430,9 @@ BEGIN
         ROLLBACK TRANSACTION;
         THROW;
     END CATCH
-
 END;
 GO
+
 
 
 
