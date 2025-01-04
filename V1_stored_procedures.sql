@@ -373,7 +373,7 @@ CREATE PROCEDURE usp_add_book
     @price DECIMAL(18,2),
     @stock_quantity INT,
     @page_count INT,
-    @average_rating DECIMAL(3,2),
+    @average_rating DECIMAL(3,2) = NULL,
     @dimension_id INT,
     @book_format_id INT,
     @book_language_id INT,
