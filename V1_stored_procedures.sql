@@ -424,6 +424,8 @@ GO
 
 
 
+
+
 -- REMOVE BOOK FROM STORE INVENTORY
 CREATE PROCEDURE usp_remove_book
     @book_id INT
