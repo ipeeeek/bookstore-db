@@ -1,7 +1,7 @@
 USE bookstore_dev;
 GO
 
-CREATE VIEW vw_out_of_stock_books
+CREATE VIEW dbo.vw_out_of_stock_books
 AS
 SELECT
 	b.book_id,
@@ -11,7 +11,7 @@ FROM book b
 WHERE b.stock_quantity = 0;
 GO
 
-CREATE VIEW vw_sold_books
+CREATE VIEW dbo.vw_sold_books
 AS
 SELECT
 	b.book_id,

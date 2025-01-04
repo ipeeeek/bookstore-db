@@ -1,7 +1,7 @@
 USE bookstore_dev;
 GO
 
-CREATE TRIGGER trg_rating_after_insert_calculate_average
+CREATE TRIGGER dbo.trg_rating_after_insert_calculate_average
 ON rating
 AFTER INSERT
 AS
@@ -19,7 +19,7 @@ BEGIN
 END;
 GO
 
-CREATE TRIGGER trg_book_after_in_stock_notify_customer
+CREATE TRIGGER dbo.trg_book_after_in_stock_notify_customer
 ON book
 AFTER UPDATE
 AS
@@ -37,7 +37,7 @@ BEGIN
 END;
 GO
 
-CREATE TRIGGER trg_customer_order_book_after_sale_update_stock_quantity
+CREATE TRIGGER dbo.trg_customer_order_book_after_sale_update_stock_quantity
 ON customer_order_book
 AFTER INSERT
 AS
