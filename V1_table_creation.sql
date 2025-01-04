@@ -363,7 +363,8 @@ CREATE TABLE book_author (
 
 	CONSTRAINT FK_book_author_book
 		FOREIGN KEY (book_id)
-		REFERENCES book(book_id),
+		REFERENCES book(book_id)
+		ON DELETE CASCADE,
 
 	CONSTRAINT FK_book_author_author
 		FOREIGN KEY (author_id)
