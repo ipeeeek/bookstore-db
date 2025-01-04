@@ -363,7 +363,6 @@ BEGIN
 END;
 GO
 
--- ADD BOOK TO STORE INVENTORY
 CREATE PROCEDURE usp_add_book
     @title NVARCHAR(255),
     @isbn NVARCHAR(13),
@@ -372,7 +371,11 @@ CREATE PROCEDURE usp_add_book
     @synopsis NVARCHAR(MAX),
     @price DECIMAL(18,2),
     @stock_quantity INT,
-    @page_count INT
+    @page_count INT,
+    @dimension_id INT,  -- Add dimension_id
+    @book_format_id INT,  -- Add book_format_id
+    @book_language_id INT,  -- Add book_language_id
+    @publisher_id INT  -- Add publisher_id
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -380,7 +383,6 @@ BEGIN
     BEGIN TRANSACTION;
 
     BEGIN TRY
-        -- Check if the book already exists using ISBN
         IF NOT EXISTS (
             SELECT 1
             FROM book
@@ -395,7 +397,11 @@ BEGIN
                 synopsis,
                 price,
                 stock_quantity,
-                page_count
+                page_count,
+                dimension_id,
+                book_format_id,
+                book_language_id,
+                publisher_id
             )
             VALUES (
                 @title,
@@ -405,7 +411,11 @@ BEGIN
                 @synopsis,
                 @price,
                 @stock_quantity,
-                @page_count
+                @page_count,
+                @dimension_id,
+                @book_format_id,
+                @book_language_id,
+                @publisher_id
             );
         END
         COMMIT TRANSACTION;
@@ -418,6 +428,7 @@ BEGIN
 
 END;
 GO
+
 
 -- REMOVE BOOK FROM STORE INVENTORY
 CREATE PROCEDURE usp_remove_book

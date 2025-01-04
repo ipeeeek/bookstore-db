@@ -37,7 +37,7 @@ CREATE FUNCTION fn_calculate_average_rating (
 RETURNS DECIMAL(5,2)
 AS
 BEGIN
-	DECLARE @book_rating DECIMAL(3,1)
+	DECLARE @book_rating DECIMAL(5,2)
 		SELECT @book_rating = AVG(rating_value)
 		FROM rating
 		WHERE book_id = @book_id;
