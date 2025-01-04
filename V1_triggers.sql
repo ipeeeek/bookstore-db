@@ -1,21 +1,22 @@
 USE bookstore_dev;
 GO
 
-CREATE TRIGGER dbo.trg_rating_after_insert_calculate_average
-ON rating
-AFTER INSERT
-AS
-BEGIN
-	DECLARE @book_id INT;
-	DECLARE @new_average_rating DECIMAL(3,1);
+CREATE TRIGGER dbo.trg_rating_after_insert_calculate_average  
+ON rating  
+AFTER INSERT  
+AS  
+BEGIN  
+    DECLARE @book_id INT;  
+    DECLARE @new_average_rating DECIMAL(3,1);  
+  
+    SELECT @book_id = book_id FROM inserted;  
 
-	SELECT @book_id = book_id FROM inserted;
-	SET @new_average_rating = dbo.fn_calculate_average_rating(@book_id)
-
-	UPDATE book
-	SET average_rating = @new_average_rating
-	WHERE @book_id = @book_id;
-
+    SET @new_average_rating = dbo.fn_calculate_average_rating(@book_id);  
+  
+    UPDATE book  
+    SET average_rating = @new_average_rating  
+    WHERE book_id = @book_id;
+  
 END;
 GO
 
